@@ -1,0 +1,26 @@
+# Description: A set of utilities to manage software packages 
+# URL:         http://crux.nu/gitweb/?p=tools/pkgutils.git
+# Maintainer:  CRUX System Team, core-ports at crux dot nu
+# Depends on:  libarchive
+
+name=pkgutils
+version=5.40.7
+release=1
+source=(http://crux.nu/files/$name-$version.tar.xz
+	pkgutils_add-compress-infopages.patch
+	pkgutils_fix-build-needed-trigger.patch
+	pkgutils_remove-libtool.patch
+	pkgutils_fix-locales-musl.patch)
+
+build () {
+	cd $name-$version
+
+	patch -Np1 -i $SRC/pkgutils_add-compress-infopages.patch
+	patch -Np1 -i $SRC/pkgutils_fix-build-needed-trigger.patch
+	patch -Np1 -i $SRC/pkgutils_remove-libtool.patch
+	patch -Np1 -i $SRC/pkgutils_fix-locales-musl.patch
+
+	sed 's/--static //g' -i Makefile
+	sed 's/-static //g' -i Makefile
+	make DESTDIR=$PKG install
+}

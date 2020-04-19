@@ -1,0 +1,20 @@
+# Description: Tools and library to manipulate EFI variables
+# URL: https://github.com/rhinstaller/efivar
+# Maintainer: Thomas Penteker, tek at serverop dot de
+# Depends on: popt
+
+name=efivar
+version=37
+release=1
+source=(https://github.com/rhinstaller/$name/releases/download/$version/$name-$version.tar.bz2
+	0001-Support-custom-cflags-for-CC_FOR_BUILD-and-CCLD_FOR_.patch
+	0002-Replace-call-to-strncpy-by-memcpy-to-fix-some-GCC8-w.patch)
+
+build() {
+	cd $name-$version
+	export CFLAGS="$CFLAGS -D_GNU_SOURCE -Wno-error=address-of-packed-member"
+	patch -Np1 -i $SRC/0001-Support-custom-cflags-for-CC_FOR_BUILD-and-CCLD_FOR_.patch
+	patch -Np1 -i $SRC/0002-Replace-call-to-strncpy-by-memcpy-to-fix-some-GCC8-w.patch
+	make -j1
+	make libdir=/usr/lib DESTDIR=$PKG install
+}

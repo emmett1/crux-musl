@@ -1,0 +1,3 @@
+d8a7de76eea045bb69975d75a8b69629  0001-Support-custom-cflags-for-CC_FOR_BUILD-and-CCLD_FOR_.patch
+2bafa1c215e90f5b56d91096f9d92e89  0002-Replace-call-to-strncpy-by-memcpy-to-fix-some-GCC8-w.patch
+9f067275c5f7aafdd75bfb364280ac9c  efivar-37.tar.bz2

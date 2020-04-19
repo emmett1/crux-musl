@@ -1,0 +1,52 @@
+# Description: The GNU Compiler Collection
+# URL:         http://gcc.gnu.org
+# Maintainer:  CRUX System Team, core-ports at crux dot nu
+# Depends on:  zlib libmpc
+
+name=gcc
+version=9.3.0
+release=1
+source=(http://ftpmirror.gnu.org/$name/$name-$version/$name-$version.tar.xz \
+	$name-nocheck-fixincludes.patch $name-4.7.3-multilib-dirs.patch)
+
+
+build() {
+    patch -d $name-$version -p1 -i $SRC/$name-nocheck-fixincludes.patch
+    patch -d $name-$version -p1 -i $SRC/$name-4.7.3-multilib-dirs.patch
+
+    mkdir build
+    cd build
+    ../$name-$version/configure --prefix=/usr \
+                                --libexecdir=/usr/lib \
+                                --enable-languages=c,c++,objc \
+                                --enable-threads=posix \
+                                --enable-__cxa_atexit \
+                                --enable-clocale=gnu \
+                                --enable-shared \
+                                --disable-nls \
+                                --with-x=no \
+                                --with-system-zlib \
+				--enable-default-pie \
+				--enable-default-ssp \
+				--disable-bootstrap \
+				--disable-multilib \
+				--disable-libsanitizer \
+                                --with-pkgversion="CRUX-x86_64-musl"
+    make
+    make -j1 DESTDIR=$PKG install
+
+    install -d $PKG/lib
+    ln -sf ../usr/bin/cpp $PKG/lib/cpp
+    ln -sf gcc $PKG/usr/bin/cc
+    ln -sf g++ $PKG/usr/bin/c++
+
+    mv $PKG/usr/lib/gcc/*/$version/include-fixed/{limits.h,syslimits.h} $PKG/usr/lib/gcc/*/$version/include/
+    rm -r $PKG/usr/share/{info,$name-$version} 
+    rm -r $PKG/usr/bin/*-linux-musl-*
+    rm -r $PKG/usr/lib/gcc/*/$version/{install-tools,include-fixed} 
+
+    install -d -m 0755 $PKG/usr/share/gdb/auto-load/usr/lib
+    mv $PKG/usr/lib/libstdc++.so.*-gdb.py $PKG/usr/share/gdb/auto-load/usr/lib
+
+    sed -i "s|-L$SRC[^ ]* ||g" $PKG/usr/lib/{libstdc++.la,libsupc++.la}
+}

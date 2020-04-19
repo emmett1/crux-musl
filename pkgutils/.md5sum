@@ -1,0 +1,5 @@
+526c897cb2ba8f1659545608fe629cab  pkgutils-5.40.7.tar.xz
+99bbe0ecb6bb0db1bcbf26f37f888602  pkgutils_add-compress-infopages.patch
+7769542e43a4108de16b45133f28eaea  pkgutils_fix-build-needed-trigger.patch
+655f7cfbaa7656213dfb57a279aa01c4  pkgutils_fix-locales-musl.patch
+7fc6f3be2076ff63f51b9ad7681ad2b3  pkgutils_remove-libtool.patch

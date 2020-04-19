@@ -1,0 +1,5 @@
+407f459edda9fdd9542766a85ae80822  crux-patch.diff
+707efd334e4ba1d5f65f366a3c03c794  makefile
+69ec5f175c019de526b10e43c72b9077  musl.patch
+678bc27564bd35a351b1d155d7e0a7b0  start-stop-daemon.8
+ea7e733c71183f1779719493d4341d91  start-stop-daemon.c

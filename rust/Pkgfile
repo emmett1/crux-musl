@@ -1,0 +1,124 @@
+# Description: The Rust language with Cargo included.
+# URL: http://www.rust-lang.org/
+# Maintainer: Danny Rawlins, crux at romster dot me
+# Depends on: llvm
+# Optional: sccache llvm-32
+
+name=rust
+version=1.42.0
+##cat src/stage0.txt
+_date=2020-02-27
+_rustc=1.41.1
+_cargo=0.42.0
+##
+
+release=2
+source=(
+	https://static.rust-lang.org/dist/${name}c-$version-src.tar.xz
+	https://static.rust-lang.org/dist/$_date/rust-std-$_rustc-x86_64-unknown-linux-musl.tar.xz
+	https://static.rust-lang.org/dist/$_date/rustc-$_rustc-x86_64-unknown-linux-musl.tar.xz
+	https://static.rust-lang.org/dist/$_date/cargo-$_cargo-x86_64-unknown-linux-musl.tar.xz
+	musl.patch
+)
+
+clear_vendor_checksums() {
+	sed -i 's/\("files":{\)[^}]*/\1/' vendor/$1/.cargo-checksum.json
+}
+
+unpack_source() {
+	for file in ${source[@]}; do
+		case ${file##*/} in
+			rustc-${version}-src.tar.xz)
+			echo "Unpacking $(get_filename $file)";
+			bsdtar -p -o -C $SRC -xf $(get_filename $file) ;;
+		*.tar.xz)
+			echo "Copying $(get_filename $file)";
+			mkdir -p $SRC/${name}c-$version-src/build/cache/$_date || true
+			cp $(get_filename $file) $SRC/${name}c-$version-src/build/cache/$_date ;;
+		*)
+			cp $(get_filename $file) $SRC ;;
+		esac
+	done
+}
+
+build() {
+	cd "${name}c-$version-src"
+
+	patch -Np1 -i $SRC/musl.patch
+
+	local ERROR
+	local DATE="$(awk '/^date: / { print $2 }' src/stage0.txt)"
+	local RUSTC="$(awk '/^rustc: / { print $2 }' src/stage0.txt)"
+	local CARGO="$(awk '/^cargo: / { print $2 }' src/stage0.txt)"
+	if [ "$DATE" != "$_date" ]; then
+		printf "\e[031mError: _date $_date != $DATE\033[0m\n"
+		ERROR=1
+	fi
+	if [ "$RUSTC" != "$_rustc" ]; then
+		printf "\e[031mError: _rustc $_rustc != $RUSTC\033[0m\n"
+		ERROR=1
+	fi
+	if [ "$CARGO" != "$_cargo" ]; then
+		printf "\e[031mError: _cargo $_cargo != $CARGO\033[0m\n"
+		ERROR=1
+	fi
+	[ $ERROR ] && exit 1
+	unset DATE RUSTC CARGO ERROR
+
+	prt-get isinst sccache && export RUSTC_WRAPPER=/usr/bin/sccache
+
+	clear_vendor_checksums openssl-sys
+	clear_vendor_checksums libc
+
+cat > $SRC/config.toml <<- EOF
+		[build]
+		build = "x86_64-unknown-linux-musl"
+		host = [ "x86_64-unknown-linux-musl" ]
+		target = [ "x86_64-unknown-linux-musl" ]
+		docs = false
+		extended = true
+		submodules = false
+		python = "python3"
+		locked-deps = true
+		vendor = true
+
+		[install]
+		prefix = "/usr"
+
+		[rust]
+		channel = "stable"
+		rpath = false
+		codegen-units = 1
+		debuginfo-level = 2
+		backtrace = true
+		jemalloc = false
+		codegen-tests = false
+
+		[target.x86_64-unknown-linux-musl]
+		llvm-config = "/usr/bin/llvm-config"
+		crt-static = false
+		cc = "gcc"
+		cxx = "g++"
+		ar = "ar"
+		linker = "gcc"
+	EOF
+
+	cat $SRC/config.toml
+
+	mkdir "$PKGMK_SOURCE_DIR/rust" || true
+	export CARGO_HOME="$PKGMK_SOURCE_DIR/rust"
+
+	export RUSTFLAGS="$RUSTFLAGS -C link-args=-lffi"
+	/usr/bin/python3 ./x.py build --config="${SRC}"/config.toml --exclude src/tools/miri -j ${JOBS-1}
+
+	export LIBSSH2_SYS_USE_PKG_CONFIG=1
+	DESTDIR=$PKG /usr/bin/python3 ./x.py --config="${SRC}"/config.toml install
+	unset LIBSSH2_SYS_USE_PKG_CONFIG
+
+	[ -e '/usr/bin/zsh' ] || rm -r $PKG/usr/share/zsh
+
+	# cleanup
+	rm -r $PKG/usr/share/doc
+	rm -r $PKG/etc
+	rm $PKG/usr/lib/rustlib/{components,manifest-rustc,rust-installer-version,uninstall.sh}
+}

@@ -1,0 +1,5 @@
+untrusted comment: verify with /etc/ports/opt.pub
+RWSE3ohX2g5d/X/G4ceQvUTt0gm+N8Ir6BVeF2oWirpNqvoaqKziXeNmIt9UZ3rYj9d8aS2nAscs9uGWmQH3UEZnvid7Mol/iQA=
+SHA256 (Pkgfile) = ffdeff2ad06c8a17557a726f5371744e3ddcfdfaf7d276bc32106c66b926164a
+SHA256 (.footprint) = d2635b8d15f209c57660fbe4cb2db6687fa6180031148c10061e165294f04a93
+SHA256 (btrfs-progs-v5.6.tar.xz) = a1321c77521dfa6cac41d0d030358e9c74bcf650afd6a9c1c7d531e6cd112f6b

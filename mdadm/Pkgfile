@@ -1,0 +1,17 @@
+# Description: Multiple device (RAID) admin tool
+# URL:         http://neil.brown.name/blog/mdadm
+# Maintainer:  Juergen Daubert, jue at crux dot nu
+
+name=mdadm
+version=4.1
+release=1
+source=(http://www.kernel.org/pub/linux/utils/raid/$name/$name-$version.tar.xz
+	sysmacros_h.patch)
+
+build() {
+    cd $name-$version
+    patch -Np0 -i $SRC/sysmacros_h.patch
+    make CFLAGS="$CFLAGS -DNO_COROSYNC -DNO_DLM -Wno-error" all mdadm.static
+    make DESTDIR=$PKG install
+    install -m755 mdadm.static $PKG/sbin
+}

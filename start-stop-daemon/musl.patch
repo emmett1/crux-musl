@@ -1,0 +1,22 @@
+--- start-stop-daemon.c-ori	2020-04-17 23:28:00.415492000 +0800
++++ start-stop-daemon.c	2020-04-17 23:28:56.225492728 +0800
+@@ -58,9 +58,6 @@
+ #ifdef HAVE_SYS_SYSCALL_H
+ #include <sys/syscall.h>
+ #endif
+-#ifdef HAVE_SYS_SYSCTL_H
+-#include <sys/sysctl.h>
+-#endif
+ #ifdef HAVE_SYS_PROCFS_H
+ #include <sys/procfs.h>
+ #endif
+@@ -102,9 +99,6 @@
+ #include <stdlib.h>
+ #include <stdio.h>
+ #include <getopt.h>
+-#ifdef HAVE_ERROR_H
+-#include <error.h>
+-#endif
+ #ifdef HAVE_ERR_H
+ #include <err.h>
+ #endif

@@ -1,0 +1,4 @@
+fe5e8c9754cee342b958b5fcbbb6eb51  lilo-24.2.tar.gz
+d433c968c3cd98d2fbe8947f1e34ffb9  lilo-config.patch
+e32b667b7f63e06bfdcf697ccc4dec5c  lilo.conf
+58af8ae25fa08c6e38a9e30ce61ca92d  remove___GLIBC__.patch

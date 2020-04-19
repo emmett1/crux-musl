@@ -1,0 +1,4 @@
+73e24436171f3022c5e80452295ac792  LVM2.2.02.186.tgz
+1914ec5b9dceca0c047a6be56cfe186b  fix-stdio-usage.patch
+f7a1ab788fb5b66a9b2f0fb8c451c763  mlockall-default-config.patch
+18d6d9f4f875f5a0c6b12736e9d5ffbc  portability.patch

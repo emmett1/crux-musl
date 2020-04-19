@@ -1,0 +1,29 @@
+# Description: Run commands in an environment faking root privileges
+# URL:         http://packages.debian.org/unstable/utils/fakeroot
+# Maintainer:  Juergen Daubert, jue at crux dot nu
+
+name=fakeroot
+version=1.24
+release=1
+source=(https://deb.debian.org/debian/pool/main/f/$name/${name}_${version}.orig.tar.gz
+        silence-dlerror.patch
+	fakeroot-no64.patch
+	fakeroot-stdint.patch)
+
+build () {
+    cd $name-$version
+    
+    # https://sourceware.org/bugzilla/show_bug.cgi?id=19509
+    patch -p1 -i $SRC/silence-dlerror.patch
+
+    #patch -p0 -i $SRC/fakeroot-no64.patch
+    #patch -p0 -i $SRC/fakeroot-stdint.patch
+
+    export CFLAGS="-D_STAT_VER=0 $CFLAGS"
+    
+    sed -i '/^SUBDIRS/d' doc/Makefile.am
+    ./bootstrap
+    ./configure --prefix=/usr
+    make
+    make DESTDIR=$PKG install
+}

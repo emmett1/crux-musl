@@ -1,0 +1,23 @@
+diff -Naur pkgutils-5.40.7-ori/pkgmk.in pkgutils-5.40.7/pkgmk.in
+--- pkgutils-5.40.7-ori/pkgmk.in	2020-04-17 16:27:34.875372000 +0800
++++ pkgutils-5.40.7/pkgmk.in	2020-04-17 16:31:38.765369429 +0800
+@@ -554,6 +554,8 @@
+ 	info "Building '$TARGET'."
+ 
+ 	unpack_source
++	
++	mkdir -p $PKG/usr/share/locale
+ 
+ 	cd $SRC
+ 	(set -e -x ; build)
+@@ -563,6 +565,10 @@
+ 			strip_files
+ 		fi
+ 		
++		[ -d $PKG/usr/lib/locale ] && rm -fr $PKG/usr/lib/locale
++		[ -f $PKG/usr/lib/charset.alias ] && rm -f $PKG/usr/lib/charset.alias
++		rmdir $PKG/usr/share/locale &>/dev/null || true
++		
+ 		compress_infopages
+ 
+ 		compress_manpages
